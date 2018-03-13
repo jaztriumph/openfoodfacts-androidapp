@@ -34,10 +34,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 import openfoodfacts.github.scrachx.openfood.R;
+import openfoodfacts.github.scrachx.openfood.models.Product;
 import openfoodfacts.github.scrachx.openfood.models.ProductImageField;
 import openfoodfacts.github.scrachx.openfood.models.SaveItem;
 import openfoodfacts.github.scrachx.openfood.models.SendProduct;
 import openfoodfacts.github.scrachx.openfood.models.SendProductDao;
+import openfoodfacts.github.scrachx.openfood.models.State;
 import openfoodfacts.github.scrachx.openfood.network.OpenFoodAPIClient;
 import openfoodfacts.github.scrachx.openfood.utils.NavigationDrawerListener.NavigationDrawerType;
 import openfoodfacts.github.scrachx.openfood.utils.Utils;
@@ -221,7 +223,15 @@ public class OfflineEditFragment extends NavigationBaseFragment implements SaveL
 
         Intent intent = new Intent(getActivity(), SaveProductOfflineActivity.class);
         SaveItem si = (SaveItem) saveItems.get(position);
-        intent.putExtra("barcode", si.getBarcode());
+        State st=new State();
+        Product pd=new Product();
+        pd.setCode(si.getBarcode());
+        st.setProduct(pd);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("state", st);
+        intent.putExtras(bundle);
+        intent.putExtra("offlineEdit",true);
+//        intent.putExtra("barcode", si.getBarcode());
         startActivity(intent);
     }
 
@@ -256,7 +266,7 @@ public class OfflineEditFragment extends NavigationBaseFragment implements SaveL
                 Toast.makeText(getActivity(), R.string.txtNoData, Toast.LENGTH_LONG).show();
             } else {
                 mCardView.setVisibility(View.GONE);
-                Toast.makeText(getActivity(), R.string.txtLoading, Toast.LENGTH_LONG).show();
+//                Toast.makeText(getActivity(), R.string.txtLoading, Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -272,14 +282,14 @@ public class OfflineEditFragment extends NavigationBaseFragment implements SaveL
                     imageIcon = R.drawable.ic_no_red_24dp;
                 }
 
-                Bitmap bitmap = Utils.decodeFile(new File(product.getImgupload_front()));
-                if (bitmap == null) {
-                    Log.e(LOG_TAG, "Unable to load the image of the product: " + product.getBarcode());
-                    continue;
-                }
-
-                Bitmap imgUrl = Bitmap.createScaledBitmap(bitmap, 200, 200, true);
-                saveItems.add(new SaveItem(product.getName(), imageIcon,imgUrl , product.getBarcode(),product.getWeight()+" "+product.getWeight_unit(),product.getBrands()));
+//                Bitmap bitmap = Utils.decodeFile(new File(product.getImgupload_front()));
+//                if (bitmap == null) {
+//                    Log.e(LOG_TAG, "Unable to load the image of the product: " + product.getBarcode());
+//                    continue;
+//                }
+//
+//                Bitmap imgUrl = Bitmap.createScaledBitmap(bitmap, 200, 200, true);
+                saveItems.add(new SaveItem(product.getName(), imageIcon,product.getImgupload_front(), product.getBarcode(),product.getWeight()+" "+product.getWeight_unit(),product.getBrands()));
             }
 
             return ctx[0];
